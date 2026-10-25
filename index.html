@@ -1,0 +1,573 @@
+<title>HamsiLand</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap">
+<style>
+  /* Kimlik: GitHub-dark zemin, tek mavi vurgu; pixel yazı sadece marka ve kemerde.
+     Palet + tipografi tokenları; tüm renkler buradan türetilir. */
+  :root {
+    --bg: #0d1117;
+    --bg-band: #010409;
+    --surface: #161b22;
+    --raised: #1c2128;
+    --line: #30363d;
+    --line-strong: #3d444d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --faint: #6e7681;
+    --accent: #1f6feb;
+    --accent-hover: #2f81f7;
+    --accent-text: #ffffff;
+    --link: #58a6ff;
+    --ok: #3fb950;
+    --bad: #f85149;
+    --gold: #d29922;
+    --gold-soft: #e3b341;
+    --radius: 8px;
+    --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --font-pixel: "Silkscreen", var(--font-mono);
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #ffffff;
+      --bg-band: #f6f8fa;
+      --surface: #f6f8fa;
+      --raised: #ffffff;
+      --line: #d0d7de;
+      --line-strong: #afb8c1;
+      --text: #1f2328;
+      --muted: #59636e;
+      --faint: #818b98;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+      --link: #0969da;
+      --ok: #1a7f37;
+      --bad: #cf222e;
+      --gold: #9a6700;
+      --gold-soft: #bf8700;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff;
+    --bg-band: #f6f8fa;
+    --surface: #f6f8fa;
+    --raised: #ffffff;
+    --line: #d0d7de;
+    --line-strong: #afb8c1;
+    --text: #1f2328;
+    --muted: #59636e;
+    --faint: #818b98;
+    --accent: #0969da;
+    --accent-hover: #0550ae;
+    --link: #0969da;
+    --ok: #1a7f37;
+    --bad: #cf222e;
+    --gold: #9a6700;
+    --gold-soft: #bf8700;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; }
+  a { color: var(--link); text-underline-offset: 3px; }
+  a:hover { color: var(--text); }
+  h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 3px; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* Üst bar */
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .top-in { display: flex; align-items: center; gap: 20px; min-height: 60px; flex-wrap: wrap; padding-block: 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); margin-right: auto; }
+  .brand-mark { width: 26px; height: 26px; display: block; image-rendering: pixelated; }
+  .brand-name { font-family: var(--font-pixel); font-weight: 700; font-size: 16px; letter-spacing: 0.5px; }
+  .nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .nav a { font-size: 14px; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+  .nav a:hover { color: var(--text); background: var(--surface); }
+  .nav .nav-cta { color: var(--accent-text); background: var(--accent); }
+  .nav .nav-cta:hover { background: var(--accent-hover); color: var(--accent-text); }
+
+  main { display: block; padding-bottom: 8px; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: start; padding-block: 56px 44px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
+  .hero h1 { font-size: clamp(38px, 6vw, 62px); font-weight: 700; margin: 10px 0 6px; }
+  .hero .lede { font-size: clamp(18px, 2.4vw, 23px); color: var(--text); font-weight: 500; max-width: 32ch; text-wrap: balance; }
+  .hero .desc { color: var(--muted); max-width: 56ch; margin-top: 14px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 6px; border: 1px solid var(--line-strong);
+    background: var(--surface); color: var(--text); font: inherit; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; }
+  .btn:hover { background: var(--raised); border-color: var(--muted); color: var(--text); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-text); }
+  .btn .k { font-family: var(--font-mono); font-size: 12px; opacity: 0.8; }
+
+  .server { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .server-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .server-name { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+  .server-name img { width: 20px; height: 20px; image-rendering: pixelated; }
+  .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+  .addr-box { display: flex; gap: 6px; margin-top: 14px; }
+  .addr { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 14px; color: var(--text); background: var(--bg-band);
+    border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; overflow-x: auto; white-space: nowrap; }
+  .addr-copy { flex: none; width: 38px; display: grid; place-items: center; padding: 0; }
+  .server dl { margin: 14px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; font-size: 13.5px; }
+  .server dt { color: var(--faint); font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.6px; text-transform: uppercase; align-self: center; }
+  .server dd { margin: 0; color: var(--muted); }
+  .server dd.warn { color: var(--text); }
+  .server-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+  .server-foot a, .server-foot code { white-space: nowrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex: none; align-self: center; }
+  .dot.off { background: var(--faint); }
+
+  /* Bölüm iskeleti */
+  section { padding-block: 44px; border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .sec-head h2 { font-size: clamp(22px, 3.2vw, 29px); font-weight: 600; }
+  .sec-head p { color: var(--muted); font-size: 14.5px; max-width: 52ch; }
+
+  /* Adımlar */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: s; }
+  .steps li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .steps li::before { counter-increment: s; content: counter(s); font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+    border: 1px solid var(--line-strong); border-radius: 4px; width: 24px; height: 24px; display: grid; place-items: center; }
+  .steps h3 { font-size: 16px; font-weight: 600; }
+  .steps p { color: var(--muted); font-size: 14px; }
+  .steps .where { margin-top: auto; font-family: var(--font-mono); font-size: 12px; color: var(--faint); }
+  .note { margin-top: 16px; padding: 12px 14px; background: var(--bg-band);
+    border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 6px; font-size: 14px; color: var(--muted); }
+  .note strong { color: var(--text); font-weight: 500; }
+  .note code { color: var(--text); white-space: nowrap; }
+
+  /* Dünya kartları */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 9px; }
+  .card h3 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .card h3 svg { flex: none; color: var(--muted); }
+  .card p { color: var(--muted); font-size: 14px; }
+  .card .more { margin-top: auto; padding-top: 6px; font-size: 13.5px; }
+
+  /* Ekip */
+  .roster { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .player { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .player-top { display: flex; align-items: center; gap: 12px; }
+  .head { width: 52px; height: 52px; flex: none; image-rendering: pixelated; background: var(--bg-band); border: 1px solid var(--line); border-radius: 4px; }
+  .player-id { min-width: 0; }
+  .player-name { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-sub { font-size: 12.5px; color: var(--faint); font-family: var(--font-mono); }
+  .player.champ { border-color: var(--gold); }
+  .player.champ .player-sub { color: var(--gold-soft); }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { font-size: 11.5px; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--muted); }
+  .badge.gold { color: var(--gold-soft); border-color: var(--gold); }
+  .badge.none { border-style: dashed; color: var(--faint); }
+  .pstats { display: grid; gap: 4px; margin: 0; padding-top: 2px; font-size: 13.5px; }
+  .pstat { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 4px; }
+  .pstat:first-child { border-top: 0; padding-top: 0; }
+  .pstat span:last-child { font-family: var(--font-mono); color: var(--text); font-variant-numeric: tabular-nums; }
+  .pstat.lead, .pstat.lead span:last-child { color: var(--gold-soft); }
+  .snapshot { color: var(--faint); font-size: 12.5px; font-family: var(--font-mono); }
+
+  /* Kemer */
+  .belt-box { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .belt { width: 100%; }
+  .belt svg { display: block; width: 100%; max-width: 460px; shape-rendering: crispEdges; }
+  .champ-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .champ-line .label { font-family: var(--font-pixel); font-size: 12px; color: var(--gold-soft); letter-spacing: 1px; }
+  .champ-name { font-size: clamp(26px, 4vw, 36px); font-weight: 700; color: var(--gold-soft); word-break: break-word; }
+  .champ-facts { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 12px; }
+  .fact .n { font-family: var(--font-mono); font-size: 20px; color: var(--text); display: block; font-variant-numeric: tabular-nums; }
+  .fact .k { font-size: 12px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.8px; }
+  .hist { list-style: none; margin: 16px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+  .hist li { display: flex; gap: 8px; }
+  .hist .who { color: var(--text); }
+  .belt-note { font-size: 13px; color: var(--faint); margin-top: 10px; }
+
+  /* SSS */
+  .faq { display: grid; gap: 8px; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0 16px; }
+  details[open] { background: var(--raised); }
+  summary { cursor: pointer; padding: 13px 0; font-weight: 500; font-size: 15px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: var(--font-mono); color: var(--muted); }
+  details[open] summary::after { content: "−"; }
+  details p { padding-bottom: 14px; color: var(--muted); font-size: 14.5px; max-width: 70ch; }
+
+  /* Alt */
+  .foot { border-top: 1px solid var(--line); padding-block: 30px 44px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; color: var(--faint); font-size: 13.5px; }
+  .foot-links { display: flex; gap: 16px; flex-wrap: wrap; }
+  .foot a { color: var(--muted); }
+
+  .live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; padding-block: 36px 32px; }
+    .roster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .belt-box { grid-template-columns: 1fr; }
+    .belt svg { margin: 0 auto; }
+  }
+  @media (max-width: 640px) {
+    .steps { grid-template-columns: 1fr; }
+    .sec-head { flex-direction: column; gap: 4px; }
+  }
+  @media (max-width: 520px) {
+    .roster { grid-template-columns: 1fr; }
+    .nav a { padding: 5px 8px; font-size: 13px; }
+    .addr { font-size: 12.5px; }
+  }
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 16 16" aria-hidden="true">
+        <rect width="16" height="16" fill="#1f6feb"/>
+        <rect x="2" y="7" width="2" height="7" fill="#fff"/>
+        <rect x="2" y="4" width="2" height="2" fill="#fff"/>
+        <rect x="7" y="3" width="2" height="11" fill="#fff"/>
+        <rect x="4" y="6" width="3" height="2" fill="#fff"/>
+        <rect x="12" y="6" width="2" height="2" fill="#fff"/>
+        <rect x="11" y="8" width="3" height="2" fill="#fff"/>
+        <rect x="11" y="10" width="3" height="4" fill="#fff"/>
+      </svg>
+      <span class="brand-name">HAMSILAND</span>
+    </a>
+    <nav class="nav" aria-label="Sayfa">
+      <a href="#giris">Giriş</a>
+      <a href="#dunya">Dünya</a>
+      <a href="#ekip">Ekip</a>
+      <a href="#kemer">Kemer</a>
+      <a href="#sss">SSS</a>
+      <a class="nav-cta" href="https://discord.gg/hq7qAXNkZH">Discord</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero" style="border-top:0">
+      <div>
+        <p class="eyebrow">Survival · Arena · Frankfurt</p>
+        <h1>HamsiLand</h1>
+        <p class="lede">Dağın dibinde bir kasaba, tepesinde bir kemer.</p>
+        <p class="desc">Arkadaş grubunun survival dünyası. 1500 blokluk claim hakkın, CoreProtect ile kayıtlı yapılar, 3 saatte bir yedek. Kemer ise sadece Arena'da el değiştirir. Sunucu kapalıysa Discord'dan açılır.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#giris">Nasıl girilir</a>
+          <a class="btn" href="https://arnoldgods.pro/map/">Haritayı aç <span class="k">bluemap</span></a>
+        </div>
+      </div>
+      <aside class="server" aria-label="Sunucu bilgileri">
+        <div class="server-top">
+          <span class="server-name"><svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true" style="image-rendering:pixelated"><rect width="16" height="16" fill="#79553a"/><rect width="16" height="5" fill="#5f9a3f"/><rect x="0" y="5" width="16" height="1" fill="#4a7a30"/><rect x="2" y="2" width="3" height="1" fill="#74b34e"/><rect x="9" y="1" width="2" height="2" fill="#74b34e"/><rect x="12" y="9" width="2" height="1" fill="#8f6a4b"/><rect x="5" y="11" width="3" height="2" fill="#5d4029"/></svg>HamsiLand</span>
+          <span class="tag">Paper 26.2</span>
+        </div>
+        <div class="addr-box">
+          <code class="addr" id="addr" tabindex="0">hamsiland.arnoldgods.pro</code>
+          <button class="btn addr-copy" id="copy" type="button" aria-label="Adresi kopyala" title="Adresi kopyala">⧉</button>
+        </div>
+        <span class="live" id="live" role="status"></span>
+        <dl>
+          <dt>Sürüm</dt><dd>Java 26.2</dd>
+          <dt>Bölge</dt><dd>Frankfurt, Almanya</dd>
+          <dt>Erişim</dt><dd>Whitelist açık</dd>
+          <dt>İstemci</dt><dd>TLauncher olur</dd>
+          <dt>Mod</dt><dd class="warn">HamsiArena zorunlu</dd>
+        </dl>
+        <p class="server-foot"><span class="dot" aria-hidden="true"></span>Durum: <a href="https://discord.gg/hq7qAXNkZH">#sunucu-kontrol</a> kanalında <code>/sunucu-durum</code></p>
+      </aside>
+    </section>
+
+    <section id="giris">
+      <div class="sec-head">
+        <h2>Üç adımda giriş</h2>
+        <p>Sunucu whitelist'li ve mod zorunlu. Sıra önemli.</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Discord'a katıl</h3>
+          <p>İsmini bırak; whitelist'e eklenmen gerek. Girmek için ekipten biri yeter.</p>
+          <span class="where">discord.gg/hq7qAXNkZH</span>
+        </li>
+        <li>
+          <h3>Modu kur</h3>
+          <p>Arena modu, Fabric API ve ses modunu indir. Modsuz giriş 15 saniye sonra atılır.</p>
+          <span class="where">#paketler · Fabric 26.2</span>
+        </li>
+        <li>
+          <h3>Bağlan</h3>
+          <p>Adresi oyuna yapıştır. Kaynak paketi sorusuna “Evet” de: meme sesleri ve skinler orada.</p>
+          <span class="where">hamsiland.arnoldgods.pro</span>
+        </li>
+      </ol>
+      <p class="note"><strong>Sunucu boş kalırsa kendi kendine kapanır.</strong> Hiç kimse yokken 30 dakika geçerse kapanıyor. Kapalıysa Discord'daki <code>/sunucu-ac</code> komutuyla açılır; açan kişi birkaç dakika beklemeli.</p>
+    </section>
+
+    <section id="dunya">
+      <div class="sec-head">
+        <h2>Dünyada ne var</h2>
+        <p>Her şey ayakta kalma üzerine kurulu; kolaylaştıran şeyler claim, harita ve Arena.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z"/></svg>Claim</h3>
+          <p>Herkese 1500 blok claim hakkı. Nether ve End'de de açık, süresi dolmaz. Altın kürek claim'ini gösterir, kırmızı çizgi sınırındır.</p>
+          <a class="more" href="https://discord.gg/hq7qAXNkZH">Rehber: #claim-alma</a>
+        </article>
+        <article class="card">
+          <h3><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 13.5 8 2l6 11.5M5 9h6"/></svg>Arena</h3>
+          <p>Hakem NPC'ye sağ tıkla, takımı ve seti seç. 1v1 maç kemeri değiştirir; 2-6 kişilik takım maçı ve okçu kalesi var. Arenada gerçek ölüm yok.</p>
+          <span class="more mono" style="color:var(--faint)">Setler: Demir / Elmas / Tam Büyülü Elmas</span>
+        </article>
+        <article class="card">
+          <h3><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 9v4h2v-4M6 9V3h4v6M10 9v4h2V9"/></svg>Radyo</h3>
+          <p>Meclis ağacının yanında müzik kutusu. Sağ tıkla, çalanı bütün sunucu duyar. Meclis merdivenlerine oturup dinlemek serbest.</p>
+          <span class="more mono" style="color:var(--faint)">10 parça · 24 blok menzil</span>
+        </article>
+        <article class="card">
+          <h3><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1.5 4.5 8 1.5l6.5 3v7L8 14.5l-6.5-3Z"/><path d="M8 6v8M1.5 4.5 8 7.5l6.5-3"/></svg>Harita</h3>
+          <p>Canlı BlueMap; dünya, Nether ve End. Claim sınırları renkli çizilir, sahibi kalıcı renkte görünür.</p>
+          <a class="more" href="https://arnoldgods.pro/map/">Haritaya git</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="ekip">
+      <div class="sec-head">
+        <h2>Ekip</h2>
+        <p>Altı kişi. Unvanlar dünyadaki sayılardan geliyor, snapshot alındığı andaki.</p>
+        <a class="snapshot" href="https://arnoldgods.pro/ekip/">Canlı ekip sayfası →</a>
+      </div>
+      <div class="roster" id="roster"></div>
+      <p class="snapshot" style="margin-top:14px">Snapshot: <span id="updated">—</span> · saatlik değil, elle alınır</p>
+    </section>
+
+    <section id="kemer">
+      <div class="sec-head">
+        <h2>Şampiyonluk kemeri</h2>
+        <p>Arena'da kazanılan, kaybedilene kadar belinde kalan tek eşya. Dışarıdaki PvP kemeri değiştirmez.</p>
+      </div>
+      <div class="belt-box">
+        <div class="belt" id="belt" aria-hidden="true"></div>
+        <div>
+          <div class="champ-line"><span class="label">ŞAMPİYON</span></div>
+          <div class="champ-line"><span class="champ-name" id="champName">—</span></div>
+          <div class="champ-facts">
+            <div class="fact"><span class="n" id="held">—</span><span class="k">elinde</span></div>
+            <div class="fact"><span class="n" id="def">—</span><span class="k">savunma</span></div>
+          </div>
+          <ul class="hist" id="hist"></ul>
+          <p class="belt-note">Kemer yalnızca 1v1 Arena maçında el değiştirir. Hükmen devir için sunucuya bakılır.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sss">
+      <div class="sec-head"><h2>Sık sorulan</h2></div>
+      <div class="faq">
+        <details>
+          <summary>Modsuz girebilir miyim?</summary>
+          <p>Hayır. Arena ekranları modun içinde; modsuz bağlanan 15 saniye sonra atılır. Mod, Fabric API ve ses modu #paketler kanalında tek mesajda duruyor. Kurulum Fabric 26.2 içindir.</p>
+        </details>
+        <details>
+          <summary>Sunucu kapalı, ne yapayım?</summary>
+          <p>#sunucu-kontrol kanalına <code>/sunucu-ac</code> yaz. Açma yetkisi "sunucu" rolünde, ekipteki herkeste var. Açılış birkaç dakika sürer; tıklayıp beklemek yeterli.</p>
+        </details>
+        <details>
+          <summary>Kimler girebilir?</summary>
+          <p>Whitelist'te olanlar. Ekip dışından biri gelecekse Discord'da ismini bildir, eklenince girebilir. Offline mod olduğu için isim taklidi mümkün; şüpheli isim görürsen kontrol et.</p>
+        </details>
+        <details>
+          <summary>Yapım kaybolur mu?</summary>
+          <p>CoreProtect her kırma ve koymayı kaydeder, gerekirse geri alınır. Yedekler 3 saatte bir ve her kapanışta alınır, S3'te 14 gün durur. Claim dışındaki yapılar yine de risklidir.</p>
+        </details>
+        <details>
+          <summary>Ne kadar yerim var?</summary>
+          <p>1500 blok. Süre dolmaz, saatlik birikmez. Bitince ekipten biri oy birliğiyle bonus ekleyebilir. Claim dışında kalan her şey ortaktır.</p>
+        </details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot wrap">
+  <div>
+    <div>HamsiLand · arkadaş sunucusu, 2026</div>
+    <div class="mono" style="font-size:12px; margin-top:4px">hamsiland.arnoldgods.pro</div>
+  </div>
+  <div class="foot-links">
+    <a href="https://discord.gg/hq7qAXNkZH">Discord</a>
+    <a href="https://arnoldgods.pro/map/">Harita</a>
+    <a href="https://arnoldgods.pro/ekip/">Ekip</a>
+    <a href="#top">Başa dön</a>
+  </div>
+</footer>
+
+<script>
+const STATS = {"updated":1792948801,"players":[{"name":"ArnoldGods","playHours":36.9,"deaths":23,"playerKills":9,"diamonds":54,"km":276.9},{"name":"BerkantK","playHours":24.6,"deaths":80,"playerKills":7,"diamonds":239,"km":196.3},{"name":"eminsiker53","playHours":28.9,"deaths":24,"playerKills":18,"diamonds":59,"km":190.4},{"name":"gotikssevenn35","playHours":4.1,"deaths":5,"playerKills":1,"diamonds":0,"km":24.9},{"name":"akiffff","playHours":25.8,"deaths":13,"playerKills":0,"diamonds":2,"km":191.8},{"name":"KublayHan","playHours":21.2,"deaths":8,"playerKills":4,"diamonds":13,"km":150.1}]};
+const BELT = {"holder":"eminsiker53","since":1792784451,"defenses":4,"history":[{"type":"defense","holder":"eminsiker53","challenger":"BerkantK","at":1792927401},{"type":"defense","holder":"eminsiker53","challenger":"BerkantK","at":1792927266},{"type":"defense","holder":"eminsiker53","challenger":"ArnoldGods","at":1792920227},{"type":"defense","holder":"eminsiker53","challenger":"ArnoldGods","at":1792920071},{"type":"win","from":"KublayHan","to":"eminsiker53","at":1792784451}]};
+
+const fmt = n => Number(n).toLocaleString("tr-TR");
+const d = s => new Date(s * 1000);
+
+// Sunucu adresini kopyala
+const copyBtn = document.getElementById("copy");
+const live = document.getElementById("live");
+copyBtn.addEventListener("click", async () => {
+  const text = document.getElementById("addr").textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = "✓";
+    live.textContent = "Adres kopyalandı";
+  } catch {
+    const r = document.createRange();
+    r.selectNodeContents(document.getElementById("addr"));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    copyBtn.textContent = "seç";
+    live.textContent = "Adres seçildi, Ctrl+C ile kopyala";
+  }
+  setTimeout(() => { copyBtn.textContent = "⧉"; }, 1800);
+});
+
+// Kemer çizimi (72x26 piksel)
+function drawBelt() {
+  const W = 72, H = 26, px = [];
+  const put = (x, y, c) => px.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`);
+  const oct = (x, y, x0, y0, w, h, cut) => {
+    const u = x - x0, v = y - y0;
+    return u >= 0 && v >= 0 && u < w && v < h && u + v >= cut && (w - 1 - u) + v >= cut && u + (h - 1 - v) >= cut && (w - 1 - u) + (h - 1 - v) >= cut;
+  };
+  for (let x = 2; x < 70; x++) for (let y = 9; y <= 16; y++) {
+    if ((x === 2 || x === 69) && (y === 9 || y === 16)) continue;
+    let c = y === 9 ? "#34343a" : y === 16 ? "#0b0b0c" : "#1d1d20";
+    if ((y === 10 || y === 15) && x > 3 && x < 68 && x % 3 === 0) c = "#9c8540";
+    put(x, y, c);
+  }
+  for (const x0 of [9, 53]) for (let x = x0; x < x0 + 10; x++) for (let y = 6; y < 20; y++) {
+    const edge = x === x0 || x === x0 + 9 || y === 6 || y === 19;
+    let c = edge ? "#5e440a" : (x === x0 + 1 || y === 7) ? "#ffe596" : (x === x0 + 8 || y === 18) ? "#a8740f" : "#e2ab2b";
+    const gx = x - x0 - 4, gy = y - 12;
+    if (gx >= 0 && gx < 2 && gy >= 0 && gy < 2) c = gx + gy === 0 ? "#ff7a7a" : "#c4161c";
+    put(x, y, c);
+  }
+  const X0 = 23, Y0 = 0, PW = 26, PH = 26;
+  const H_ = [[0,0],[0,1],[0,2],[0,3],[0,4],[2,0],[2,1],[2,2],[2,3],[2,4],[1,2]];
+  const L_ = [[0,0],[0,1],[0,2],[0,3],[0,4],[1,4],[2,4]];
+  const letter = (pts, ox, oy) => new Set(pts.map(([a, b]) => `${ox + a},${oy + b}`));
+  const ink = new Set([...letter(H_, 27, 11), ...letter(L_, 42, 11)]);
+  for (let x = X0; x < X0 + PW; x++) for (let y = Y0; y < Y0 + PH; y++) {
+    if (!oct(x, y, X0, Y0, PW, PH, 6)) continue;
+    let c;
+    if (!oct(x, y, X0 + 1, Y0 + 1, PW - 2, PH - 2, 6)) c = "#5e440a";
+    else if (!oct(x, y, X0 + 2, Y0 + 2, PW - 4, PH - 4, 6)) c = (y < 13 || x < 30) ? "#fff0a0" : "#b88412";
+    else if (oct(x, y, X0 + 3, Y0 + 3, PW - 6, PH - 6, 5) && !oct(x, y, X0 + 4, Y0 + 4, PW - 8, PH - 8, 5)) c = "#8a6410";
+    else c = y < 13 ? "#f4c430" : "#dca322";
+    const dx = x - 35.5, dy = y - 12.5, dd = Math.abs(dx) + Math.abs(dy);
+    if (dd <= 4.5) c = dd > 3.5 ? "#6e090c" : (dx < 0 && dy < 0) ? "#ff5a5a" : (dx > 0 && dy > 0) ? "#8e0d12" : "#c4161c";
+    if (dd <= 1 && dx < 0 && dy < 0) c = "#ffd0d0";
+    if (ink.has(`${x},${y}`)) c = "#6b4e0a";
+    put(x, y, c);
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Şampiyonluk kemeri">${px.join("")}</svg>`;
+}
+
+const held = s => {
+  const t = Math.max(0, Math.floor(Date.now() / 1000) - s);
+  const g = Math.floor(t / 86400), h = Math.floor((t % 86400) / 3600), m = Math.floor((t % 3600) / 60);
+  return g ? `${g} gün ${h} sa` : h ? `${h} sa ${m} dk` : `${Math.max(1, m)} dk`;
+};
+const ago = s => {
+  const t = Math.max(0, Math.floor(Date.now() / 1000) - s);
+  return t >= 86400 ? `${Math.floor(t / 86400)} gün önce` : t >= 3600 ? `${Math.floor(t / 3600)} saat önce` : `${Math.max(1, Math.floor(t / 60))} dk önce`;
+};
+
+// Kemer paneli
+document.getElementById("belt").innerHTML = drawBelt();
+document.getElementById("champName").textContent = BELT.holder;
+document.getElementById("held").textContent = held(BELT.since);
+document.getElementById("def").textContent = fmt(BELT.defenses);
+document.getElementById("hist").innerHTML = BELT.history.slice(0, 4).map(h => {
+  const line = h.type === "win"
+    ? `<span class="who">${h.to}</span> kemeri aldı, rakip ${h.from}`
+    : `<span class="who">${h.holder}</span>, ${h.challenger}'a karşı kemeri korudu`;
+  return `<li><span style="color:var(--faint)">${h.type === "win" ? "⚔" : "🛡"}</span><span>${line} · ${ago(h.at)}</span></li>`;
+}).join("");
+
+// Ekip kartları
+const headInto = (canvas, name) => {
+  const img = new Image();
+  img.onload = () => {
+    const x = canvas.getContext("2d");
+    x.imageSmoothingEnabled = false;
+    x.drawImage(img, 8, 8, 8, 8, 0, 0, 16, 16);
+    x.drawImage(img, 40, 8, 8, 8, 0, 0, 16, 16);
+  };
+  img.src = `skins/${name}.png`;
+};
+
+const TITLES = [
+  ["playerKills", "PvP Kralı"], ["diamonds", "Elmas Avcısı"], ["playHours", "Müdavim"], ["km", "Gezgin"]
+];
+const players = STATS.players.slice().sort((a, b) =>
+  (b.name === BELT.holder) - (a.name === BELT.holder) || b.playHours - a.playHours);
+const leaders = TITLES.map(([k, label]) => {
+  const max = Math.max(...players.map(p => p[k]));
+  return { k, label, name: max > 0 ? players.find(p => p[k] === max).name : null };
+});
+
+const roster = document.getElementById("roster");
+players.forEach(p => {
+  const mine = leaders.filter(l => l.name === p.name);
+  const champ = BELT.holder === p.name;
+  const card = document.createElement("article");
+  card.className = "player" + (champ ? " champ" : "");
+  const row = (k, label, val) =>
+    `<div class="pstat${mine.some(l => l.k === k) ? " lead" : ""}"><span>${label}</span><span>${val}</span></div>`;
+  card.innerHTML = `
+    <div class="player-top">
+      <canvas class="head" width="16" height="16"></canvas>
+      <div class="player-id">
+        <div class="player-name">${p.name}</div>
+        <div class="player-sub">${champ ? "kemer sahibi" : "ekip"}</div>
+      </div>
+    </div>
+    <div class="badges">
+      ${champ ? `<span class="badge gold">Şampiyon</span>` : ""}
+      ${mine.map(l => `<span class="badge">${l.label}</span>`).join("")}
+      ${!champ && !mine.length ? `<span class="badge none">unvan yok</span>` : ""}
+    </div>
+    <div class="pstats">
+      ${row("playHours", "Oynama", `${fmt(p.playHours)} sa`)}
+      ${row("playerKills", "PvP", `${fmt(p.playerKills)} / ${fmt(p.deaths)} ölüm`)}
+      ${row("diamonds", "Elmas", fmt(p.diamonds))}
+      ${row("km", "Yol", `${fmt(p.km)} km`)}
+    </div>`;
+  roster.appendChild(card);
+  headInto(card.querySelector("canvas"), p.name);
+});
+
+document.getElementById("updated").textContent = d(STATS.updated).toLocaleString("tr-TR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+</script>
